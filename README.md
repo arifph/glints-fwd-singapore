@@ -1,5 +1,5 @@
 # glints-fwd-singapore
-My source code for a test in FWD Singapore (via glints)
+My source code for a test in FWD Singapore (applied via glints)
 
 How to run:
 1. Make sure you can run appletviewer
