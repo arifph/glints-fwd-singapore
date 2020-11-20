@@ -54,6 +54,8 @@ public class TicTacToeDynamicBoard extends Applet implements ChangeListener, Act
 		private Point point;
 		int[] horizontalLine = new int[numberOfColumnAndRow];
 		int[] verticalLine = new int[numberOfColumnAndRow];
+		String oPoint = new String("O");
+		String xPoint = new String("X");
 
 		public BoardShouldBeDynamicButIDoNotKnowHowToMakeItDynamicAndThisClassShouldBePlacedInADifferentFileButItKeptShowingBlankIfIDoThat() {
 			addMouseListener(this);
@@ -99,16 +101,59 @@ public class TicTacToeDynamicBoard extends Applet implements ChangeListener, Act
 				graphic2d.draw(new Line2D.Double(widthPos, 0, widthPos, maxHeight));
 				verticalLine[j] = widthPos;
 			}
+			
+			// Draw Filled Board
+			// Now, I am stuck in here..
+			// And I have to refactor it too if it is done..
+			int filledPos = 0;
+			for (int m = 0; m < numberOfColumnAndRow; m++) {
+				for (int n = 0; n < numberOfColumnAndRow; n++) {
+					System.out.println("Filled Pos -> " + filledPos);
+					System.out.println("m -> " + m);
+					System.out.println("n -> "+ n);
+					if (n == numberOfColumnAndRow - 1) {
+						if (Objects.equals(position[filledPos], oPoint.charAt(0))) {
+							System.out.println("draw O");
+							drawFilledBoard(graphic2d,
+									verticalLine[n-1] - (verticalLine[n-1] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m] - (horizontalLine[m] - (maxHeight / (numberOfColumnAndRow * 2))), oPoint);
+						} else if (Objects.equals(position[filledPos], xPoint.charAt(0))) {
+							System.out.println("draw X");
+							drawFilledBoard(graphic2d,
+									verticalLine[n-1] - (verticalLine[n-1] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m] - (horizontalLine[m] - (maxHeight / (numberOfColumnAndRow * 2))), xPoint);
+						}
+					} else if (m == numberOfColumnAndRow - 1) {
+						if (Objects.equals(position[filledPos], oPoint.charAt(0))) {
+							System.out.println("draw O");
+							drawFilledBoard(graphic2d,
+									verticalLine[n] - (verticalLine[n] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m-1] - (horizontalLine[m-1] - (maxHeight / (numberOfColumnAndRow * 2))), oPoint);
+						} else if (Objects.equals(position[filledPos], xPoint.charAt(0))) {
+							System.out.println("draw X");
+							drawFilledBoard(graphic2d,
+									verticalLine[n] - (verticalLine[n] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m-1] - (horizontalLine[m-1] - (maxHeight / (numberOfColumnAndRow * 2))), xPoint);
+						}
+					} else {
+						if (Objects.equals(position[filledPos], oPoint.charAt(0))) {
+							System.out.println("draw O");
+							drawFilledBoard(graphic2d,
+									verticalLine[n] - (verticalLine[n] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m] - (horizontalLine[m] - (maxHeight / (numberOfColumnAndRow * 2))), oPoint);
+						} else if (Objects.equals(position[filledPos], xPoint.charAt(0))) {
+							System.out.println("draw X");
+							drawFilledBoard(graphic2d,
+									verticalLine[n] - (verticalLine[n] - (maxWidth / (numberOfColumnAndRow * 2))),
+									horizontalLine[m] - (horizontalLine[m] - (maxHeight / (numberOfColumnAndRow * 2))), xPoint);
+						}
+					}
+					filledPos++;
+				}
+			}
 
 			graphic.setFont(new Font("Calibri", Font.BOLD, 30));
 			if (point != null) {
-				// I was stuck in here
-				for (int i = 0; i < position.length; i++) {
-					if (Objects.equals(position[i], '\u0000')) {
-						drawXorDrawO(graphic2d, point.x, point.y, turn);
-					}
-				}
-
 				System.out.println("Turn : " + turn);
 
 				int positionInArray = 0;
@@ -119,9 +164,10 @@ public class TicTacToeDynamicBoard extends Applet implements ChangeListener, Act
 
 				searchPos: for (int k = 0; k < numberOfColumnAndRow; k++) {
 					for (int l = 0; l < numberOfColumnAndRow; l++) {
-						if (xPos == l && yPos == k) {
-							// Fill Position Array
+						if (xPos == l && yPos == k && Objects.equals(position[positionInArray], '\u0000')) {
+							// Fill Position Array if it is null
 							position[positionInArray] = drawXorDrawO(graphic2d, point.x, point.y, turn).charAt(0);
+							turn++;
 							break searchPos;
 						}
 						positionInArray++;
@@ -129,19 +175,19 @@ public class TicTacToeDynamicBoard extends Applet implements ChangeListener, Act
 				}
 				System.out.println("Pos -> " + positionInArray);
 				System.out.println("Array pos ==> " + Arrays.toString(position));
-
-				turn++;
 			}
 		}
 
+		public void drawFilledBoard(Graphics2D graphic2d, int xCoordinate, int yCoordinate, String filledPoint) {
+			graphic2d.drawString(filledPoint, xCoordinate, yCoordinate);
+		}
+
 		public String drawXorDrawO(Graphics2D graphic2d, int xCoordinate, int yCoordinate, int turn) {
-			String oPoint = new String("O");
-			String xPoint = new String("X");
 			if (turn % 2 == 1) {
-				graphic2d.drawString(oPoint, point.x, point.y);
+				drawFilledBoard(graphic2d, xCoordinate, yCoordinate, oPoint);
 				return oPoint;
 			} else {
-				graphic2d.drawString(xPoint, point.x, point.y);
+				drawFilledBoard(graphic2d, xCoordinate, yCoordinate, xPoint);
 				return xPoint;
 			}
 		}
@@ -154,7 +200,7 @@ public class TicTacToeDynamicBoard extends Applet implements ChangeListener, Act
 	@Override
 	public void stateChanged(ChangeEvent ev) {
 	}
-	
+
 	// Aaargh.. I got a headache, but the time is ticking.
 	// Background music: A clock that sound "tick tock tick tock, tick tick tick".
 }
